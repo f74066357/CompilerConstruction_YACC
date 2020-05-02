@@ -880,14 +880,14 @@ case 6:
 YY_RULE_SETUP
 #line 30 "compiler_hw2.l"
 { BEGIN(STR);
-                return '"';
+                //return '"';
             }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 33 "compiler_hw2.l"
 { BEGIN(INITIAL);
-                return '"';
+                //return '"';
             }
 	YY_BREAK
 case 8:
@@ -1134,7 +1134,7 @@ case 54:
 /* rule 54 can match eol */
 YY_RULE_SETUP
 #line 98 "compiler_hw2.l"
-{ return NEWLINE; }
+{ return NEWLINE;  yylineno++;}
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(CMT):

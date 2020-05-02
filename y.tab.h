@@ -82,17 +82,16 @@ extern int yydebug;
     ELSE = 292,
     FOR = 293,
     VAR = 294,
-    TRUE = 295,
-    FALSE = 296,
-    INT = 297,
-    FLOAT = 298,
-    BOOL = 299,
-    STRING = 300,
-    INT_LIT = 301,
-    FLOAT_LIT = 302,
-    STRING_LIT = 303,
-    BOOL_LIT = 304,
-    ID = 305
+    INT = 295,
+    FLOAT = 296,
+    BOOL = 297,
+    STRING = 298,
+    INT_LIT = 299,
+    FLOAT_LIT = 300,
+    STRING_LIT = 301,
+    ID = 302,
+    TRUE = 303,
+    FALSE = 304
   };
 #endif
 /* Tokens.  */
@@ -133,32 +132,31 @@ extern int yydebug;
 #define ELSE 292
 #define FOR 293
 #define VAR 294
-#define TRUE 295
-#define FALSE 296
-#define INT 297
-#define FLOAT 298
-#define BOOL 299
-#define STRING 300
-#define INT_LIT 301
-#define FLOAT_LIT 302
-#define STRING_LIT 303
-#define BOOL_LIT 304
-#define ID 305
+#define INT 295
+#define FLOAT 296
+#define BOOL 297
+#define STRING 298
+#define INT_LIT 299
+#define FLOAT_LIT 300
+#define STRING_LIT 301
+#define ID 302
+#define TRUE 303
+#define FALSE 304
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 41 "compiler_hw2.y" /* yacc.c:1909  */
+#line 42 "compiler_hw2.y" /* yacc.c:1909  */
 
     int i_val;
     float f_val;
     char *s_val;
-    bool b_bal;
+    bool b_val;
     /* ... */
 
-#line 162 "y.tab.h" /* yacc.c:1909  */
+#line 160 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

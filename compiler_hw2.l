@@ -28,10 +28,10 @@ fnumber ({digit}*\.{digit}+)
 "//".*      {;}
 
 "\""        { BEGIN(STR);
-                return '"';
+                //return '"';
             }
 <STR>"\""   { BEGIN(INITIAL);
-                return '"';
+                //return '"';
             }
 <STR>[^\"]* { yylval.s_val = strdup(yytext);
                 return STRING_LIT;
@@ -95,7 +95,7 @@ fnumber ({digit}*\.{digit}+)
 
 ";"         { return SEMICOLON; }
 ","         { return COMMA; }
-"\n"        { return NEWLINE; }
+"\n"        { return NEWLINE;  yylineno++;}
 
  <<EOF>>     { static int once = 0;
                 if (once++) {
