@@ -66,7 +66,7 @@
 %token <s_val> TRUE FALSE
 /* Nonterminal with return, which need to sepcify type */
 %type  <s_val> Type TypeName ArrayType Literal
-%type  <s_val> add_op mul_op binary_op unary_op cmp_op Expression UnaryExpr Operand
+%type  <s_val> add_op mul_op binary_op unary_op cmp_op assign_op Expression UnaryExpr Operand
 /* Yacc will start at this nonterminal */
 %start Program
 
@@ -94,11 +94,10 @@ Statement
 
 DeclarationStmt
     : VAR ID Type   {   
-                
                         char * buff=strdup($2);
                         const char* delim = " ";
                         char *sepstr = buff;
-                        char* name=strsep(&sepstr, delim);
+                        char * name=strsep(&sepstr, delim);
                         char * dtype;
                         char * etype;
                         if(strcmp($3,"INT")==0){
@@ -112,16 +111,37 @@ DeclarationStmt
                         else if(strcmp($3,"STRING")==0){
                             dtype="string";
                             etype="-";
-                            printf("123");
                         }
                         else if(strcmp($3,"BOOL")==0){
                             dtype="bool";
+                            etype="-";
                         }
+                        else{
+                            const char* arrcut = "]";
+                            char *substr = NULL;
+                            substr =strsep(&sepstr, arrcut);
+                            char arrtype[8]={};
+                            strncpy(arrtype,sepstr,strlen(sepstr)-1);
+                            arrtype[strlen(sepstr)]="\0";
+                            //printf("len %d\n",strlen(sepstr));
+                            //printf("type %s\n",sepstr);
+                            //printf("type %s\n",arrtype);
+                            //printf("hoho\n");
+                            if(strcmp(arrtype,"int32")==0){
+                                dtype="array";
+                                etype="int32";
+                            }
+                            else if(strcmp(arrtype,"float32")==0){
+                                dtype="array";
+                                etype="float32";
+                            }
+                        }
+                        
                         //if(lookup_symbol(name)==-1){
                             insert_symbol(indexcount,name,dtype,addresscount,yylineno,etype,scopecount);
                             indexcount++;
                             addresscount++;
-                            //print_symbol();
+                            //print_symbol(scopecount);
                         //}
                         //else{
                         //    printf("redeclared\n");
@@ -129,34 +149,58 @@ DeclarationStmt
                         
                     }
     | VAR ID Type ASSIGN Expression     {
-                                            //printf("type %s\n",$3);
                                             char * buff=strdup($2);
                                             const char* delim = " ";
                                             char *sepstr = buff;
-                                            char* name=strsep(&sepstr, delim);
+                                            char * name=strsep(&sepstr, delim);
                                             char * dtype;
+                                            char * etype;
                                             if(strcmp($3,"INT")==0){
                                                 dtype="int32";
+                                                etype="-";
                                             }
                                             else if(strcmp($3,"FLOAT")==0){
                                                 dtype="float32";
+                                                etype="-";
                                             }
                                             else if(strcmp($3,"STRING")==0){
                                                 dtype="string";
-                                                
+                                                etype="-";
                                             }
                                             else if(strcmp($3,"BOOL")==0){
                                                 dtype="bool";
+                                                etype="-";
                                             }
+                                            else{
+                                                const char* arrcut = "]";
+                                                char *substr = NULL;
+                                                substr =strsep(&sepstr, arrcut);
+                                                char arrtype[8]={};
+                                                strncpy(arrtype,sepstr,strlen(sepstr)-1);
+                                                arrtype[strlen(sepstr)]="\0";
+                                                //printf("len %d\n",strlen(sepstr));
+                                                //printf("type %s\n",sepstr);
+                                                //printf("type %s\n",arrtype);
+                                                //printf("hoho\n");
+                                                if(strcmp(arrtype,"int32")==0){
+                                                    dtype="array";
+                                                    etype="int32";
+                                                }
+                                                else if(strcmp(arrtype,"float32")==0){
+                                                    dtype="array";
+                                                    etype="float32";
+                                                }
+                                            }
+                                            
                                             //if(lookup_symbol(name)==-1){
-                                                insert_symbol(indexcount,name,dtype,addresscount,yylineno,"-",scopecount);
+                                                insert_symbol(indexcount,name,dtype,addresscount,yylineno,etype,scopecount);
                                                 indexcount++;
                                                 addresscount++;
-                                                //print_symbol();
+                                                //print_symbol(scopecount);
                                             //}
                                             //else{
-                                            //    printf("redeclared");
-                                            //}   
+                                            //    printf("redeclared\n");
+                                            //}
                                         }
 ;
 
@@ -166,10 +210,10 @@ SimpleStmt
     | IncDecStmt
 ;
 AssignmentStmt
-    : Expression assign_op Expression
+    : Expression assign_op Expression    {printf("%s\n",$2);}
 ;
 assign_op
-    : ASSIGN
+    : ASSIGN  {$$ = "ASSIGN";}  
     | ADD_ASSIGN
     | SUB_ASSIGN
     | MUL_ASSIGN
@@ -199,9 +243,7 @@ ArrayType
 
 Expression
     : UnaryExpr     
-    | Expression binary_op Expression   {
-                                            printf("%s\n",$2);
-                                        }
+    | Expression binary_op Expression   {printf("%s\n",$2);}
 ;
 
 UnaryExpr
@@ -244,9 +286,9 @@ unary_op
 ;
 
 PrimaryExpr
-    : Operand
-    | IndexExpr
-    | ConversionExpr
+    : Operand   
+    | IndexExpr 
+    | ConversionExpr  
 ;
 
 Operand
@@ -259,14 +301,14 @@ Operand
                 //printf("%d\n",idaddress);
                 if(idaddress!=-1){
                     printf("IDENT (name=%s, address=%d)\n",$1,idaddress);
-                    sprintf(ident,"IDENT (name=%s, address=%d)",$1,idaddress);
-                    $$=ident;
+                    //sprintf(ident,"IDENT (name=%s, address=%d)",$1,idaddress);
+                    //$$=ident;
                 }
                 //else{
                     //printf("undeclared");
                 //}
             }
-    | LPAREN Expression RPAREN
+    | LPAREN Expression RPAREN 
 ;
 
 Literal
@@ -283,7 +325,7 @@ IndexExpr
 ;
 
 ConversionExpr
-    : Type LPAREN Expression RPAREN
+    : Type LPAREN Expression RPAREN 
 ;
 
 IncDecStmt
@@ -330,7 +372,23 @@ PostStmt
 
 PrintStmt
     : PRINT LPAREN Expression RPAREN
-    | PRINTLN LPAREN Expression RPAREN  {printf("PRINTLN\n");}
+    | PRINTLN LPAREN Expression RPAREN  {
+                                            //printf("oaoa : %s\n",$3);
+                                            char * buff=strdup($3);
+                                            const char* idcut = "[";
+                                            char *sepstr = buff;
+                                            char * idid=strsep(&sepstr, idcut);
+                                            //printf("oaoa : %s\n",idid);
+                                            int k=lookup_symbol(idid);
+                                            char* ptype=NULL;
+                                            if(symbolTable[k].type=="array"){
+                                                ptype=symbolTable[k].etype;
+                                            }
+                                            else{
+                                                ptype=symbolTable[k].type;
+                                            }
+                                            printf("PRINTLN %s\n",ptype);
+                                        }
 ;
 
 %%
@@ -347,6 +405,7 @@ int main(int argc, char *argv[])
 
     yylineno = 0;
     yyparse();
+    //print_symbol();
     dump_symbol(0);
 	printf("Total lines: %d\n", yylineno);
     fclose(yyin);
@@ -404,13 +463,12 @@ static void dump_symbol(int scope) {
 }
 
 static void print_symbol() {
-    int i=0;
     printf("> Print\n");
     printf("%-10s%-10s%-10s%-10s%-10s%s\n",
            "Index", "Name", "Type", "Address", "Lineno", "Element type");
     for(int i=0;i<indexcount;i++){
             printf("%-10d%-10s%-10s%-10d%-10d%s\n",
-                insert_symbol, symbolTable[i].name, symbolTable[i].type, 
+                symbolTable[i].index, symbolTable[i].name, symbolTable[i].type, 
                 symbolTable[i].address,symbolTable[i].lineno, symbolTable[i].etype);
 
     }

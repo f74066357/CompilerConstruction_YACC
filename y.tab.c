@@ -563,14 +563,14 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint16 yyrline[] =
 {
        0,    77,    77,    81,    82,    86,    87,    88,    89,    90,
-      91,    92,    96,   131,   164,   165,   166,   169,   172,   173,
-     174,   175,   176,   177,   181,   185,   186,   190,   191,   192,
-     193,   197,   201,   202,   208,   209,   213,   214,   215,   216,
-     217,   221,   222,   223,   224,   225,   226,   230,   231,   235,
-     236,   237,   241,   242,   243,   247,   248,   249,   253,   254,
-     269,   273,   274,   275,   276,   277,   282,   286,   290,   291,
-     295,   298,   301,   305,   306,   307,   311,   315,   316,   320,
-     324,   328,   332,   333
+      91,    92,    96,   151,   208,   209,   210,   213,   216,   217,
+     218,   219,   220,   221,   225,   229,   230,   234,   235,   236,
+     237,   241,   245,   246,   250,   251,   255,   256,   257,   258,
+     259,   263,   264,   265,   266,   267,   268,   272,   273,   277,
+     278,   279,   283,   284,   285,   289,   290,   291,   295,   296,
+     311,   315,   316,   317,   318,   319,   324,   328,   332,   333,
+     337,   340,   343,   347,   348,   349,   353,   357,   358,   362,
+     366,   370,   374,   375
 };
 #endif
 
@@ -1479,11 +1479,10 @@ yyreduce:
         case 12:
 #line 96 "compiler_hw2.y" /* yacc.c:1646  */
     {   
-                
                         char * buff=strdup((yyvsp[-1].s_val));
                         const char* delim = " ";
                         char *sepstr = buff;
-                        char* name=strsep(&sepstr, delim);
+                        char * name=strsep(&sepstr, delim);
                         char * dtype;
                         char * etype;
                         if(strcmp((yyvsp[0].s_val),"INT")==0){
@@ -1497,196 +1496,251 @@ yyreduce:
                         else if(strcmp((yyvsp[0].s_val),"STRING")==0){
                             dtype="string";
                             etype="-";
-                            printf("123");
                         }
                         else if(strcmp((yyvsp[0].s_val),"BOOL")==0){
                             dtype="bool";
+                            etype="-";
                         }
+                        else{
+                            const char* arrcut = "]";
+                            char *substr = NULL;
+                            substr =strsep(&sepstr, arrcut);
+                            char arrtype[8]={};
+                            strncpy(arrtype,sepstr,strlen(sepstr)-1);
+                            arrtype[strlen(sepstr)]="\0";
+                            //printf("len %d\n",strlen(sepstr));
+                            //printf("type %s\n",sepstr);
+                            //printf("type %s\n",arrtype);
+                            //printf("hoho\n");
+                            if(strcmp(arrtype,"int32")==0){
+                                dtype="array";
+                                etype="int32";
+                            }
+                            else if(strcmp(arrtype,"float32")==0){
+                                dtype="array";
+                                etype="float32";
+                            }
+                        }
+                        
                         //if(lookup_symbol(name)==-1){
                             insert_symbol(indexcount,name,dtype,addresscount,yylineno,etype,scopecount);
                             indexcount++;
                             addresscount++;
-                            //print_symbol();
+                            //print_symbol(scopecount);
                         //}
                         //else{
                         //    printf("redeclared\n");
                         //}
                         
                     }
-#line 1517 "y.tab.c" /* yacc.c:1646  */
+#line 1537 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 131 "compiler_hw2.y" /* yacc.c:1646  */
+#line 151 "compiler_hw2.y" /* yacc.c:1646  */
     {
-                                            //printf("type %s\n",$3);
                                             char * buff=strdup((yyvsp[-3].s_val));
                                             const char* delim = " ";
                                             char *sepstr = buff;
-                                            char* name=strsep(&sepstr, delim);
+                                            char * name=strsep(&sepstr, delim);
                                             char * dtype;
+                                            char * etype;
                                             if(strcmp((yyvsp[-2].s_val),"INT")==0){
                                                 dtype="int32";
+                                                etype="-";
                                             }
                                             else if(strcmp((yyvsp[-2].s_val),"FLOAT")==0){
                                                 dtype="float32";
+                                                etype="-";
                                             }
                                             else if(strcmp((yyvsp[-2].s_val),"STRING")==0){
                                                 dtype="string";
-                                                
+                                                etype="-";
                                             }
                                             else if(strcmp((yyvsp[-2].s_val),"BOOL")==0){
                                                 dtype="bool";
+                                                etype="-";
                                             }
+                                            else{
+                                                const char* arrcut = "]";
+                                                char *substr = NULL;
+                                                substr =strsep(&sepstr, arrcut);
+                                                char arrtype[8]={};
+                                                strncpy(arrtype,sepstr,strlen(sepstr)-1);
+                                                arrtype[strlen(sepstr)]="\0";
+                                                //printf("len %d\n",strlen(sepstr));
+                                                //printf("type %s\n",sepstr);
+                                                //printf("type %s\n",arrtype);
+                                                //printf("hoho\n");
+                                                if(strcmp(arrtype,"int32")==0){
+                                                    dtype="array";
+                                                    etype="int32";
+                                                }
+                                                else if(strcmp(arrtype,"float32")==0){
+                                                    dtype="array";
+                                                    etype="float32";
+                                                }
+                                            }
+                                            
                                             //if(lookup_symbol(name)==-1){
-                                                insert_symbol(indexcount,name,dtype,addresscount,yylineno,"-",scopecount);
+                                                insert_symbol(indexcount,name,dtype,addresscount,yylineno,etype,scopecount);
                                                 indexcount++;
                                                 addresscount++;
-                                                //print_symbol();
+                                                //print_symbol(scopecount);
                                             //}
                                             //else{
-                                            //    printf("redeclared");
-                                            //}   
+                                            //    printf("redeclared\n");
+                                            //}
                                         }
-#line 1552 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 27:
-#line 190 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val) = "INT";}
-#line 1558 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 28:
-#line 191 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val) = "FLOAT";}
-#line 1564 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 29:
-#line 192 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val) = "STRING";}
-#line 1570 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 30:
-#line 193 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val) = "BOOL";}
-#line 1576 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 33:
-#line 202 "compiler_hw2.y" /* yacc.c:1646  */
-    {
-                                            printf("%s\n",(yyvsp[-1].s_val));
-                                        }
-#line 1584 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 35:
-#line 209 "compiler_hw2.y" /* yacc.c:1646  */
-    {printf("%s\n",(yyvsp[-1].s_val));}
-#line 1590 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 36:
-#line 213 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="LOR";}
 #line 1596 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 37:
-#line 214 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="LAND";}
+  case 17:
+#line 213 "compiler_hw2.y" /* yacc.c:1646  */
+    {printf("%s\n",(yyvsp[-1].s_val));}
 #line 1602 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 41:
-#line 221 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="EQL";}
+  case 18:
+#line 216 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val) = "ASSIGN";}
 #line 1608 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 42:
-#line 222 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="NEQ";}
+  case 27:
+#line 234 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val) = "INT";}
 #line 1614 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 43:
-#line 223 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="LSS";}
+  case 28:
+#line 235 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val) = "FLOAT";}
 #line 1620 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 44:
-#line 224 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="LEQ";}
+  case 29:
+#line 236 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val) = "STRING";}
 #line 1626 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 45:
-#line 225 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="GTR";}
+  case 30:
+#line 237 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val) = "BOOL";}
 #line 1632 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 46:
-#line 226 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="GEQ";}
+  case 33:
+#line 246 "compiler_hw2.y" /* yacc.c:1646  */
+    {printf("%s\n",(yyvsp[-1].s_val));}
 #line 1638 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 47:
-#line 230 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="ADD";}
+  case 35:
+#line 251 "compiler_hw2.y" /* yacc.c:1646  */
+    {printf("%s\n",(yyvsp[-1].s_val));}
 #line 1644 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 48:
-#line 231 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="SUB";}
+  case 36:
+#line 255 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="LOR";}
 #line 1650 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 49:
-#line 235 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="MUL";}
+  case 37:
+#line 256 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="LAND";}
 #line 1656 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 50:
-#line 236 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="QUO";}
+  case 41:
+#line 263 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="EQL";}
 #line 1662 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 51:
-#line 237 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="REM";}
+  case 42:
+#line 264 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="NEQ";}
 #line 1668 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 52:
-#line 241 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="POS";}
+  case 43:
+#line 265 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="LSS";}
 #line 1674 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 53:
-#line 242 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="NEG";}
+  case 44:
+#line 266 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="LEQ";}
 #line 1680 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 54:
-#line 243 "compiler_hw2.y" /* yacc.c:1646  */
-    {(yyval.s_val)="NOT";}
+  case 45:
+#line 267 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="GTR";}
 #line 1686 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 46:
+#line 268 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="GEQ";}
+#line 1692 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 47:
+#line 272 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="ADD";}
+#line 1698 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 48:
+#line 273 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="SUB";}
+#line 1704 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 49:
+#line 277 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="MUL";}
+#line 1710 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 50:
+#line 278 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="QUO";}
+#line 1716 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 51:
+#line 279 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="REM";}
+#line 1722 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 52:
+#line 283 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="POS";}
+#line 1728 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 53:
+#line 284 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="NEG";}
+#line 1734 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 54:
+#line 285 "compiler_hw2.y" /* yacc.c:1646  */
+    {(yyval.s_val)="NOT";}
+#line 1740 "y.tab.c" /* yacc.c:1646  */
+    break;
+
   case 59:
-#line 254 "compiler_hw2.y" /* yacc.c:1646  */
+#line 296 "compiler_hw2.y" /* yacc.c:1646  */
     {
                 char ident[100];
                 char nameforlook[30]={};
@@ -1695,78 +1749,94 @@ yyreduce:
                 //printf("%d\n",idaddress);
                 if(idaddress!=-1){
                     printf("IDENT (name=%s, address=%d)\n",(yyvsp[0].s_val),idaddress);
-                    sprintf(ident,"IDENT (name=%s, address=%d)",(yyvsp[0].s_val),idaddress);
-                    (yyval.s_val)=ident;
+                    //sprintf(ident,"IDENT (name=%s, address=%d)",$1,idaddress);
+                    //$$=ident;
                 }
                 //else{
                     //printf("undeclared");
                 //}
             }
-#line 1706 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 61:
-#line 273 "compiler_hw2.y" /* yacc.c:1646  */
-    {printf("INT_LIT %d\n",(yyvsp[0].i_val));}
-#line 1712 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 62:
-#line 274 "compiler_hw2.y" /* yacc.c:1646  */
-    {printf("FLOAT_LIT %6f\n",(yyvsp[0].f_val));}
-#line 1718 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 63:
-#line 275 "compiler_hw2.y" /* yacc.c:1646  */
-    {printf("TRUE\n");}
-#line 1724 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 64:
-#line 276 "compiler_hw2.y" /* yacc.c:1646  */
-    {printf("FALSE\n");}
-#line 1730 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 65:
-#line 277 "compiler_hw2.y" /* yacc.c:1646  */
-    {printf("STRING_LIT %s\n",(yyvsp[0].s_val));}
-#line 1736 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 68:
-#line 290 "compiler_hw2.y" /* yacc.c:1646  */
-    {printf("%s\n","INC");}
-#line 1742 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 69:
-#line 291 "compiler_hw2.y" /* yacc.c:1646  */
-    {printf("%s\n","DEC");}
-#line 1748 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 71:
-#line 298 "compiler_hw2.y" /* yacc.c:1646  */
-    {scopecount++;}
-#line 1754 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 72:
-#line 301 "compiler_hw2.y" /* yacc.c:1646  */
-    {dump_symbol(scopecount);scopecount--;}
 #line 1760 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 83:
-#line 333 "compiler_hw2.y" /* yacc.c:1646  */
-    {printf("PRINTLN\n");}
+  case 61:
+#line 315 "compiler_hw2.y" /* yacc.c:1646  */
+    {printf("INT_LIT %d\n",(yyvsp[0].i_val));}
 #line 1766 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 62:
+#line 316 "compiler_hw2.y" /* yacc.c:1646  */
+    {printf("FLOAT_LIT %6f\n",(yyvsp[0].f_val));}
+#line 1772 "y.tab.c" /* yacc.c:1646  */
+    break;
 
-#line 1770 "y.tab.c" /* yacc.c:1646  */
+  case 63:
+#line 317 "compiler_hw2.y" /* yacc.c:1646  */
+    {printf("TRUE\n");}
+#line 1778 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 64:
+#line 318 "compiler_hw2.y" /* yacc.c:1646  */
+    {printf("FALSE\n");}
+#line 1784 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 65:
+#line 319 "compiler_hw2.y" /* yacc.c:1646  */
+    {printf("STRING_LIT %s\n",(yyvsp[0].s_val));}
+#line 1790 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 68:
+#line 332 "compiler_hw2.y" /* yacc.c:1646  */
+    {printf("%s\n","INC");}
+#line 1796 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 69:
+#line 333 "compiler_hw2.y" /* yacc.c:1646  */
+    {printf("%s\n","DEC");}
+#line 1802 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 71:
+#line 340 "compiler_hw2.y" /* yacc.c:1646  */
+    {scopecount++;}
+#line 1808 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 72:
+#line 343 "compiler_hw2.y" /* yacc.c:1646  */
+    {dump_symbol(scopecount);scopecount--;}
+#line 1814 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 83:
+#line 375 "compiler_hw2.y" /* yacc.c:1646  */
+    {
+                                            //printf("oaoa : %s\n",$3);
+                                            char * buff=strdup((yyvsp[-1].s_val));
+                                            const char* idcut = "[";
+                                            char *sepstr = buff;
+                                            char * idid=strsep(&sepstr, idcut);
+                                            //printf("oaoa : %s\n",idid);
+                                            int k=lookup_symbol(idid);
+                                            char* ptype=NULL;
+                                            if(symbolTable[k].type=="array"){
+                                                ptype=symbolTable[k].etype;
+                                            }
+                                            else{
+                                                ptype=symbolTable[k].type;
+                                            }
+                                            printf("PRINTLN %s\n",ptype);
+                                        }
+#line 1836 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+
+#line 1840 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1994,7 +2064,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 336 "compiler_hw2.y" /* yacc.c:1906  */
+#line 394 "compiler_hw2.y" /* yacc.c:1906  */
 
 
 /* C code section */
@@ -2009,6 +2079,7 @@ int main(int argc, char *argv[])
 
     yylineno = 0;
     yyparse();
+    //print_symbol();
     dump_symbol(0);
 	printf("Total lines: %d\n", yylineno);
     fclose(yyin);
@@ -2066,13 +2137,12 @@ static void dump_symbol(int scope) {
 }
 
 static void print_symbol() {
-    int i=0;
     printf("> Print\n");
     printf("%-10s%-10s%-10s%-10s%-10s%s\n",
            "Index", "Name", "Type", "Address", "Lineno", "Element type");
     for(int i=0;i<indexcount;i++){
             printf("%-10d%-10s%-10s%-10d%-10d%s\n",
-                insert_symbol, symbolTable[i].name, symbolTable[i].type, 
+                symbolTable[i].index, symbolTable[i].name, symbolTable[i].type, 
                 symbolTable[i].address,symbolTable[i].lineno, symbolTable[i].etype);
 
     }
