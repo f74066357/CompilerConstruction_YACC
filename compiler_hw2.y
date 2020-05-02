@@ -214,11 +214,11 @@ AssignmentStmt
 ;
 assign_op
     : ASSIGN  {$$ = "ASSIGN";}  
-    | ADD_ASSIGN
-    | SUB_ASSIGN
-    | MUL_ASSIGN
-    | QUO_ASSIGN
-    | REM_ASSIGN
+    | ADD_ASSIGN    {$$ = "ADD_ASSIGN";}  
+    | SUB_ASSIGN    {$$ = "SUB_ASSIGN";}  
+    | MUL_ASSIGN    {$$ = "MUL_ASSIGN";}  
+    | QUO_ASSIGN    {$$ = "QUO_ASSIGN";}  
+    | REM_ASSIGN    {$$ = "REM_ASSIGN";}  
 ;
 
 ExpressionStmt
@@ -373,11 +373,19 @@ PostStmt
 PrintStmt
     : PRINT LPAREN Expression RPAREN
     | PRINTLN LPAREN Expression RPAREN  {
-                                            //printf("oaoa : %s\n",$3);
                                             char * buff=strdup($3);
-                                            const char* idcut = "[";
-                                            char *sepstr = buff;
-                                            char * idid=strsep(&sepstr, idcut);
+                                            char * idid;
+                                            char *c=strstr(buff, "[");
+                                            if(c == NULL) {
+                                                const char* idcut1 = ")";
+                                                char *sepstr = buff;
+                                                idid=strsep(&sepstr, idcut1);
+                                            }
+                                            else{
+                                                const char* idcut2 = "[";
+                                                char *sepstr = buff;
+                                                idid=strsep(&sepstr, idcut2);
+                                            }
                                             //printf("oaoa : %s\n",idid);
                                             int k=lookup_symbol(idid);
                                             char* ptype=NULL;
