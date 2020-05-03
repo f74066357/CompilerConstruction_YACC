@@ -292,7 +292,7 @@ PrimaryExpr
 ;
 
 Operand
-    : Literal
+    : Literal   
     | ID    {
                 char ident[100];
                 char nameforlook[30]={};
@@ -312,8 +312,8 @@ Operand
 ;
 
 Literal
-    : INT_LIT   {printf("INT_LIT %d\n",$1);}
-    | FLOAT_LIT     {printf("FLOAT_LIT %6f\n",$1);}
+    : INT_LIT   {printf("INT_LIT %d\n",$1);$$="INT_LIT";}
+    | FLOAT_LIT     {printf("FLOAT_LIT %6f\n",$1);$$="FLOAT_LIT";}
     | TRUE      {printf("TRUE\n");}
     | FALSE     {printf("FALSE\n");}
     | STRING_LIT   {printf("STRING_LIT %s\n",$1);}
@@ -325,7 +325,40 @@ IndexExpr
 ;
 
 ConversionExpr
-    : Type LPAREN Expression RPAREN 
+    : Type LPAREN Expression RPAREN     {
+                                            char *conv=NULL;
+                                            if(strcmp($1,"INT")==0){
+                                                conv="I";
+                                            }
+                                            else if(strcmp($1,"FLOAT")==0){
+                                                conv="F";
+                                            } 
+                                            char * convo=NULL;
+                                            if(strcmp($3,"INT_LIT")==0){
+                                                convo="I";
+                                            }
+                                            else if(strcmp($3,"FLOAT_LIT")==0){
+                                                convo="F";
+                                            } 
+                                            else{
+                                                char * buff=strdup($3);
+                                                char * idid;
+                                                const char* idcut = ")";
+                                                char *sepstr = buff;
+                                                idid=strsep(&sepstr, idcut);
+                                                int k=lookup_symbol(idid);
+                                                char* ptype=NULL;
+                                                ptype=symbolTable[k].type;
+                                                if(strcmp(ptype,"int32")==0){
+                                                    convo="I";
+                                                }
+                                                else if(strcmp(ptype,"float32")==0){
+                                                    convo="F";
+                                                } 
+                                            }
+                                            
+                                            printf("%s to %s\n",convo,conv);
+                                        }
 ;
 
 IncDecStmt
@@ -371,8 +404,33 @@ PostStmt
 ;
 
 PrintStmt
-    : PRINT LPAREN Expression RPAREN
+    : PRINT LPAREN Expression RPAREN    {
+                                            char * buff=strdup($3);
+                                            char * idid;
+                                            char *c=strstr(buff, "[");
+                                            if(c == NULL) {
+                                                const char* idcut1 = ")";
+                                                char *sepstr = buff;
+                                                idid=strsep(&sepstr, idcut1);
+                                            }
+                                            else{
+                                                const char* idcut2 = "[";
+                                                char *sepstr = buff;
+                                                idid=strsep(&sepstr, idcut2);
+                                            }
+                                            //printf("oaoa : %s\n",idid);
+                                            int k=lookup_symbol(idid);
+                                            char* ptype=NULL;
+                                            if(symbolTable[k].type=="array"){
+                                                ptype=symbolTable[k].etype;
+                                            }
+                                            else{
+                                                ptype=symbolTable[k].type;
+                                            }
+                                            printf("PRINT %s\n",ptype);
+                                        }
     | PRINTLN LPAREN Expression RPAREN  {
+                                            //printf("oaoa :%s\n",$3);
                                             char * buff=strdup($3);
                                             char * idid;
                                             char *c=strstr(buff, "[");
