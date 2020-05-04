@@ -29,7 +29,7 @@
     /* Symbol table function - you can add new function if needed. */
     static void create_symbol();
     static void insert_symbol(int index,char* name,char* type,int address,int lineno,char* etype,int scopenum);
-    static int lookup_symbol(char *name);
+    static int lookup_symbol(char *name,int scopenum);
     static void dump_symbol(int scope);
     static void print_symbol();
 %}
@@ -297,7 +297,8 @@ Operand
                 char ident[100];
                 char nameforlook[30]={};
                 strcpy(nameforlook,$1);
-                int idaddress=lookup_symbol(nameforlook);
+                int idaddress=lookup_symbol(nameforlook,scopecount);
+                //print_symbol(0);
                 //printf("%d\n",idaddress);
                 if(idaddress!=-1){
                     printf("IDENT (name=%s, address=%d)\n",$1,idaddress);
@@ -346,7 +347,7 @@ ConversionExpr
                                                 const char* idcut = ")";
                                                 char *sepstr = buff;
                                                 idid=strsep(&sepstr, idcut);
-                                                int k=lookup_symbol(idid);
+                                                int k=lookup_symbol(idid,scopecount);
                                                 char* ptype=NULL;
                                                 ptype=symbolTable[k].type;
                                                 if(strcmp(ptype,"int32")==0){
@@ -419,13 +420,16 @@ PrintStmt
                                                 idid=strsep(&sepstr, idcut2);
                                             }
                                             //printf("oaoa : %s\n",idid);
-                                            int k=lookup_symbol(idid);
+                                            int k=lookup_symbol(idid,scopecount);
                                             char* ptype=NULL;
                                             if(symbolTable[k].type=="array"){
                                                 ptype=symbolTable[k].etype;
                                             }
-                                            else{
+                                            else if(k!=-1){
                                                 ptype=symbolTable[k].type;
+                                            }
+                                            else{
+                                                ptype="string";
                                             }
                                             printf("PRINT %s\n",ptype);
                                         }
@@ -444,14 +448,23 @@ PrintStmt
                                                 char *sepstr = buff;
                                                 idid=strsep(&sepstr, idcut2);
                                             }
-                                            //printf("oaoa : %s\n",idid);
-                                            int k=lookup_symbol(idid);
+                                            //printf("oaoa0 :%s\n",idid);
+                                            int k=lookup_symbol(idid,scopecount);
                                             char* ptype=NULL;
                                             if(symbolTable[k].type=="array"){
                                                 ptype=symbolTable[k].etype;
                                             }
-                                            else{
+                                            else if(k!=-1){
                                                 ptype=symbolTable[k].type;
+                                            }
+                                            else if(strcmp(idid,"FLOAT_LIT")==0){
+                                                 ptype= "float32";
+                                            }
+                                            else if(strcmp(idid,"INT_LIT")==0){
+                                                 ptype= "int32";
+                                            }
+                                            else{
+                                                ptype="string";
                                             }
                                             printf("PRINTLN %s\n",ptype);
                                         }
@@ -501,9 +514,9 @@ static void insert_symbol(int index,char* name,char* type,int address,int lineno
     printf("> Insert {%s} into symbol table (scope level: %d)\n", name, scopenum);
 }
 
-static int lookup_symbol(char *name) {
+static int lookup_symbol(char *name,int scopenum) {
     for(int i=0;i<indexcount;i++){
-        if(strcmp(symbolTable[i].name,name)==0){
+        if(strcmp(symbolTable[i].name,name)==0&&symbolTable[i].scopenum==scopenum){
             return symbolTable[i].index;
         }
     }
@@ -530,13 +543,13 @@ static void dump_symbol(int scope) {
 
 static void print_symbol() {
     printf("> Print\n");
-    printf("%-10s%-10s%-10s%-10s%-10s%s\n",
-           "Index", "Name", "Type", "Address", "Lineno", "Element type");
+    printf("%-10s%-10s%-10s%-10s%-10s%-10s%s\n",
+           "Index", "Name", "Type", "Address", "Lineno", "Element type","scope");
     for(int i=0;i<indexcount;i++){
-            printf("%-10d%-10s%-10s%-10d%-10d%s\n",
+            printf("%-10d%-10s%-10s%-10d%-10d%-10s%d\n",
                 symbolTable[i].index, symbolTable[i].name, symbolTable[i].type, 
-                symbolTable[i].address,symbolTable[i].lineno, symbolTable[i].etype);
-
+                symbolTable[i].address,symbolTable[i].lineno, symbolTable[i].etype,
+                symbolTable[i].scopenum);
     }
     
 }

@@ -93,7 +93,7 @@
     /* Symbol table function - you can add new function if needed. */
     static void create_symbol();
     static void insert_symbol(int index,char* name,char* type,int address,int lineno,char* etype,int scopenum);
-    static int lookup_symbol(char *name);
+    static int lookup_symbol(char *name,int scopenum);
     static void dump_symbol(int scope);
     static void print_symbol();
 
@@ -568,9 +568,9 @@ static const yytype_uint16 yyrline[] =
      237,   241,   245,   246,   250,   251,   255,   256,   257,   258,
      259,   263,   264,   265,   266,   267,   268,   272,   273,   277,
      278,   279,   283,   284,   285,   289,   290,   291,   295,   296,
-     311,   315,   316,   317,   318,   319,   324,   328,   365,   366,
-     370,   373,   376,   380,   381,   382,   386,   390,   391,   395,
-     399,   403,   407,   432
+     312,   316,   317,   318,   319,   320,   325,   329,   366,   367,
+     371,   374,   377,   381,   382,   383,   387,   391,   392,   396,
+     400,   404,   408,   436
 };
 #endif
 
@@ -1775,7 +1775,8 @@ yyreduce:
                 char ident[100];
                 char nameforlook[30]={};
                 strcpy(nameforlook,(yyvsp[0].s_val));
-                int idaddress=lookup_symbol(nameforlook);
+                int idaddress=lookup_symbol(nameforlook,scopecount);
+                //print_symbol(0);
                 //printf("%d\n",idaddress);
                 if(idaddress!=-1){
                     printf("IDENT (name=%s, address=%d)\n",(yyvsp[0].s_val),idaddress);
@@ -1786,41 +1787,41 @@ yyreduce:
                     //printf("undeclared");
                 //}
             }
-#line 1790 "y.tab.c" /* yacc.c:1646  */
+#line 1791 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 315 "compiler_hw2.y" /* yacc.c:1646  */
+#line 316 "compiler_hw2.y" /* yacc.c:1646  */
     {printf("INT_LIT %d\n",(yyvsp[0].i_val));(yyval.s_val)="INT_LIT";}
-#line 1796 "y.tab.c" /* yacc.c:1646  */
+#line 1797 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 316 "compiler_hw2.y" /* yacc.c:1646  */
+#line 317 "compiler_hw2.y" /* yacc.c:1646  */
     {printf("FLOAT_LIT %6f\n",(yyvsp[0].f_val));(yyval.s_val)="FLOAT_LIT";}
-#line 1802 "y.tab.c" /* yacc.c:1646  */
+#line 1803 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 317 "compiler_hw2.y" /* yacc.c:1646  */
+#line 318 "compiler_hw2.y" /* yacc.c:1646  */
     {printf("TRUE\n");}
-#line 1808 "y.tab.c" /* yacc.c:1646  */
+#line 1809 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 318 "compiler_hw2.y" /* yacc.c:1646  */
+#line 319 "compiler_hw2.y" /* yacc.c:1646  */
     {printf("FALSE\n");}
-#line 1814 "y.tab.c" /* yacc.c:1646  */
+#line 1815 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 319 "compiler_hw2.y" /* yacc.c:1646  */
+#line 320 "compiler_hw2.y" /* yacc.c:1646  */
     {printf("STRING_LIT %s\n",(yyvsp[0].s_val));}
-#line 1820 "y.tab.c" /* yacc.c:1646  */
+#line 1821 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 328 "compiler_hw2.y" /* yacc.c:1646  */
+#line 329 "compiler_hw2.y" /* yacc.c:1646  */
     {
                                             char *conv=NULL;
                                             if(strcmp((yyvsp[-3].s_val),"INT")==0){
@@ -1842,7 +1843,7 @@ yyreduce:
                                                 const char* idcut = ")";
                                                 char *sepstr = buff;
                                                 idid=strsep(&sepstr, idcut);
-                                                int k=lookup_symbol(idid);
+                                                int k=lookup_symbol(idid,scopecount);
                                                 char* ptype=NULL;
                                                 ptype=symbolTable[k].type;
                                                 if(strcmp(ptype,"int32")==0){
@@ -1855,35 +1856,35 @@ yyreduce:
                                             
                                             printf("%s to %s\n",convo,conv);
                                         }
-#line 1859 "y.tab.c" /* yacc.c:1646  */
+#line 1860 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 365 "compiler_hw2.y" /* yacc.c:1646  */
+#line 366 "compiler_hw2.y" /* yacc.c:1646  */
     {printf("%s\n","INC");}
-#line 1865 "y.tab.c" /* yacc.c:1646  */
+#line 1866 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 366 "compiler_hw2.y" /* yacc.c:1646  */
+#line 367 "compiler_hw2.y" /* yacc.c:1646  */
     {printf("%s\n","DEC");}
-#line 1871 "y.tab.c" /* yacc.c:1646  */
+#line 1872 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 373 "compiler_hw2.y" /* yacc.c:1646  */
+#line 374 "compiler_hw2.y" /* yacc.c:1646  */
     {scopecount++;}
-#line 1877 "y.tab.c" /* yacc.c:1646  */
+#line 1878 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 376 "compiler_hw2.y" /* yacc.c:1646  */
+#line 377 "compiler_hw2.y" /* yacc.c:1646  */
     {dump_symbol(scopecount);scopecount--;}
-#line 1883 "y.tab.c" /* yacc.c:1646  */
+#line 1884 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 407 "compiler_hw2.y" /* yacc.c:1646  */
+#line 408 "compiler_hw2.y" /* yacc.c:1646  */
     {
                                             char * buff=strdup((yyvsp[-1].s_val));
                                             char * idid;
@@ -1899,21 +1900,24 @@ yyreduce:
                                                 idid=strsep(&sepstr, idcut2);
                                             }
                                             //printf("oaoa : %s\n",idid);
-                                            int k=lookup_symbol(idid);
+                                            int k=lookup_symbol(idid,scopecount);
                                             char* ptype=NULL;
                                             if(symbolTable[k].type=="array"){
                                                 ptype=symbolTable[k].etype;
                                             }
-                                            else{
+                                            else if(k!=-1){
                                                 ptype=symbolTable[k].type;
+                                            }
+                                            else{
+                                                ptype="string";
                                             }
                                             printf("PRINT %s\n",ptype);
                                         }
-#line 1913 "y.tab.c" /* yacc.c:1646  */
+#line 1917 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 432 "compiler_hw2.y" /* yacc.c:1646  */
+#line 436 "compiler_hw2.y" /* yacc.c:1646  */
     {
                                             //printf("oaoa :%s\n",$3);
                                             char * buff=strdup((yyvsp[-1].s_val));
@@ -1929,22 +1933,31 @@ yyreduce:
                                                 char *sepstr = buff;
                                                 idid=strsep(&sepstr, idcut2);
                                             }
-                                            //printf("oaoa : %s\n",idid);
-                                            int k=lookup_symbol(idid);
+                                            //printf("oaoa0 :%s\n",idid);
+                                            int k=lookup_symbol(idid,scopecount);
                                             char* ptype=NULL;
                                             if(symbolTable[k].type=="array"){
                                                 ptype=symbolTable[k].etype;
                                             }
-                                            else{
+                                            else if(k!=-1){
                                                 ptype=symbolTable[k].type;
+                                            }
+                                            else if(strcmp(idid,"FLOAT_LIT")==0){
+                                                 ptype= "float32";
+                                            }
+                                            else if(strcmp(idid,"INT_LIT")==0){
+                                                 ptype= "int32";
+                                            }
+                                            else{
+                                                ptype="string";
                                             }
                                             printf("PRINTLN %s\n",ptype);
                                         }
-#line 1944 "y.tab.c" /* yacc.c:1646  */
+#line 1957 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1948 "y.tab.c" /* yacc.c:1646  */
+#line 1961 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2172,7 +2185,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 460 "compiler_hw2.y" /* yacc.c:1906  */
+#line 473 "compiler_hw2.y" /* yacc.c:1906  */
 
 
 /* C code section */
@@ -2217,9 +2230,9 @@ static void insert_symbol(int index,char* name,char* type,int address,int lineno
     printf("> Insert {%s} into symbol table (scope level: %d)\n", name, scopenum);
 }
 
-static int lookup_symbol(char *name) {
+static int lookup_symbol(char *name,int scopenum) {
     for(int i=0;i<indexcount;i++){
-        if(strcmp(symbolTable[i].name,name)==0){
+        if(strcmp(symbolTable[i].name,name)==0&&symbolTable[i].scopenum==scopenum){
             return symbolTable[i].index;
         }
     }
@@ -2246,13 +2259,13 @@ static void dump_symbol(int scope) {
 
 static void print_symbol() {
     printf("> Print\n");
-    printf("%-10s%-10s%-10s%-10s%-10s%s\n",
-           "Index", "Name", "Type", "Address", "Lineno", "Element type");
+    printf("%-10s%-10s%-10s%-10s%-10s%-10s%s\n",
+           "Index", "Name", "Type", "Address", "Lineno", "Element type","scope");
     for(int i=0;i<indexcount;i++){
-            printf("%-10d%-10s%-10s%-10d%-10d%s\n",
+            printf("%-10d%-10s%-10s%-10d%-10d%-10s%d\n",
                 symbolTable[i].index, symbolTable[i].name, symbolTable[i].type, 
-                symbolTable[i].address,symbolTable[i].lineno, symbolTable[i].etype);
-
+                symbolTable[i].address,symbolTable[i].lineno, symbolTable[i].etype,
+                symbolTable[i].scopenum);
     }
     
 }
