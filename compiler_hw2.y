@@ -449,7 +449,9 @@ PrintStmt
                                                 idid=strsep(&sepstr, idcut2);
                                             }
                                             //printf("oaoa0 :%s\n",idid);
+                                            //print_symbol(0);
                                             int k=lookup_symbol(idid,scopecount);
+                                            //printf("oaoa12 :%d %d\n",scopecount,k);
                                             char* ptype=NULL;
                                             if(symbolTable[k].type=="array"){
                                                 ptype=symbolTable[k].etype;
@@ -520,6 +522,14 @@ static int lookup_symbol(char *name,int scopenum) {
             return symbolTable[i].index;
         }
     }
+    while(scopenum!=0){
+        scopenum--;
+        for(int i=0;i<indexcount;i++){
+        if(strcmp(symbolTable[i].name,name)==0&&symbolTable[i].scopenum==scopenum){
+            return symbolTable[i].index;
+        }
+    }
+    }
     return -1;
 }
 
@@ -543,10 +553,10 @@ static void dump_symbol(int scope) {
 
 static void print_symbol() {
     printf("> Print\n");
-    printf("%-10s%-10s%-10s%-10s%-10s%-10s%s\n",
+    printf("%-10s%-10s%-10s%-10s%-10s%-10s%-10s\n",
            "Index", "Name", "Type", "Address", "Lineno", "Element type","scope");
     for(int i=0;i<indexcount;i++){
-            printf("%-10d%-10s%-10s%-10d%-10d%-10s%d\n",
+            printf("%-10d%-10s%-10s%-10d%-10d%-10s%-10d\n",
                 symbolTable[i].index, symbolTable[i].name, symbolTable[i].type, 
                 symbolTable[i].address,symbolTable[i].lineno, symbolTable[i].etype,
                 symbolTable[i].scopenum);
