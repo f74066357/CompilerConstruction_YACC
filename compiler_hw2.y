@@ -210,7 +210,10 @@ SimpleStmt
     | IncDecStmt
 ;
 AssignmentStmt
-    : Expression assign_op Expression    {printf("%s\n",$2);}
+    : Expression assign_op Expression   {
+                                            
+                                            printf("%s\n",$2);
+                                        }
 ;
 assign_op
     : ASSIGN  {$$ = "ASSIGN";}  
@@ -243,7 +246,9 @@ ArrayType
 
 Expression
     : UnaryExpr     
-    | Expression binary_op Expression   {printf("%s\n",$2);}
+    | Expression binary_op Expression   {
+                                            printf("%s\n",$2);
+                                        }
 ;
 
 UnaryExpr
@@ -286,7 +291,7 @@ unary_op
 ;
 
 PrimaryExpr
-    : Operand   
+    : Operand                
     | IndexExpr 
     | ConversionExpr  
 ;
