@@ -15,6 +15,7 @@
     static int indexcount=0;
     static int addresscount=0;
     static int scopecount=0;
+    static int pl=0;
 
     typedef struct Symbols {
         int index;
@@ -66,7 +67,7 @@
 %token <s_val> TRUE FALSE
 /* Nonterminal with return, which need to sepcify type */
 %type  <s_val> Type TypeName ArrayType Literal
-%type  <s_val> add_op mul_op binary_op unary_op cmp_op assign_op Expression UnaryExpr Operand
+%type  <s_val> add_op mul_op l_op binary_op unary_op cmp_op assign_op Expression UnaryExpr Operand
 /* Yacc will start at this nonterminal */
 %start Program
 
@@ -137,15 +138,17 @@ DeclarationStmt
                             }
                         }
                         
-                        //if(lookup_symbol(name)==-1){
+                        if(lookup_symbol(name,scopecount)==-1){
                             insert_symbol(indexcount,name,dtype,addresscount,yylineno,etype,scopecount);
                             indexcount++;
                             addresscount++;
                             //print_symbol(scopecount);
-                        //}
-                        //else{
-                        //    printf("redeclared\n");
-                        //}
+                        }
+                        else{
+                            int i=lookup_symbol(name,scopecount);
+                            int p=symbolTable[i].lineno;
+                            printf("error\:%d\: %s redeclared in this block. previous declaration at line %d\n",yylineno,name,p);
+                        }
                         
                     }
     | VAR ID Type ASSIGN Expression     {
@@ -211,7 +214,14 @@ SimpleStmt
 ;
 AssignmentStmt
     : Expression assign_op Expression   {
-                                            
+                                            char * buff=strdup($1);
+                                            const char* delim = " ";
+                                            char *sepstr = buff;
+                                            char * idname=strsep(&sepstr, delim);
+                                            //printf("%s\n",idname);
+                                            if(strcmp(idname,"INT_LIT")==0){
+                                                printf("error\:%d\: cannot assign to %s\n",yylineno,"int32");
+                                            }
                                             printf("%s\n",$2);
                                         }
 ;
@@ -247,21 +257,20 @@ ArrayType
 Expression
     : UnaryExpr     
     | Expression binary_op Expression   {
+                                            //printf("first %s\n",$1);
                                             printf("%s\n",$2);
+                                            //printf("thrid %s\n",$3);
                                         }
 ;
 
+
 UnaryExpr
     : PrimaryExpr   
-    | unary_op UnaryExpr {printf("%s\n",$1);}
+    | unary_op UnaryExpr {printf("%s\n",$1);$$=$1;}
 ;
 
 binary_op
-    : LOR   {$$="LOR";}
-    | LAND  {$$="LAND";}
-    | cmp_op
-    | add_op    
-    | mul_op
+    : add_op
 ;
 
 cmp_op
@@ -271,17 +280,23 @@ cmp_op
     | LEQ   {$$="LEQ";}
     | GTR   {$$="GTR";}
     | GEQ   {$$="GEQ";}
+    | l_op
 ;
-
+l_op
+    : LOR   {$$="LOR";}
+    | LAND  {$$="LAND";}
+;
 add_op
     : ADD   {$$="ADD";}
     | SUB   {$$="SUB";}
+    | mul_op
 ;
 
 mul_op
     : MUL   {$$="MUL";}
     | QUO   {$$="QUO";}
     | REM   {$$="REM";}
+    | cmp_op
 ;
 
 unary_op
@@ -303,6 +318,7 @@ Operand
                 char nameforlook[30]={};
                 strcpy(nameforlook,$1);
                 int idaddress=lookup_symbol(nameforlook,scopecount);
+
                 //print_symbol(0);
                 //printf("%d\n",idaddress);
                 if(idaddress!=-1){
@@ -310,11 +326,13 @@ Operand
                     //sprintf(ident,"IDENT (name=%s, address=%d)",$1,idaddress);
                     //$$=ident;
                 }
-                //else{
-                    //printf("undeclared");
-                //}
+                else{
+                    printf("error\:%d\: undefined\: %s\n",yylineno+1,nameforlook);
+                }
             }
-    | LPAREN Expression RPAREN 
+    | LPAREN Expression RPAREN  {
+                                    printf("%s\n",$2);
+                                }
 ;
 
 Literal
@@ -458,6 +476,12 @@ PrintStmt
                                             int k=lookup_symbol(idid,scopecount);
                                             //printf("oaoa12 :%d %d\n",scopecount,k);
                                             char* ptype=NULL;
+                                            /*
+                                            if(pl==2){
+                                                ptype= "bool";
+                                                pl=0;
+                                            }
+                                            */
                                             if(symbolTable[k].type=="array"){
                                                 ptype=symbolTable[k].etype;
                                             }
@@ -470,6 +494,7 @@ PrintStmt
                                             else if(strcmp(idid,"INT_LIT")==0){
                                                  ptype= "int32";
                                             }
+                                            
                                             else{
                                                 ptype="string";
                                             }
