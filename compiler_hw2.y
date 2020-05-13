@@ -17,6 +17,8 @@
     static int scopecount=0;
     static int f_flag=0;
     static int if_flag=0;
+    static int  p_flag=0;
+    static int  b_flag=0;
     typedef struct Symbols {
         int index;
         char* name;
@@ -511,13 +513,22 @@ UnaryExpr
                                     f_flag=0;
                                 }
                             }
+                            char * x1="x {";
                             if(if_flag==1){
                                 if(strcmp($1,"FLOAT_LIT")==0){
                                     printf("error\:%d\: non-bool (type float32) used as for condition\n",yylineno+1);
                                     if_flag=0;
                                 }
-                                else if(strcmp($1,"x {")==0){
-                                    //printf("%s\n",$1);
+                                else if(strcmp($1,"INT_LIT")==0){
+                                    printf("error\:%d\: non-bool (type int32) used as for condition\n",yylineno+1);
+                                    if_flag=0;
+                                }
+                                else if(strcmp($1,x1)==0){
+                                    char * buff=strdup($1);
+                                    const char* delim = " ";
+                                    char *sepstr = buff;
+                                    char * first=strsep(&sepstr, delim);
+                                    //printf("%s\n",first);
                                     printf("error\:%d\: non-bool (type int32) used as for condition\n",yylineno+1);
                                     if_flag=0;
                                 }
@@ -534,12 +545,12 @@ binary_op
 ;
 
 cmp_op
-    : EQL   {$$="EQL";}
-    | NEQ   {$$="NEQ";}
-    | LSS   {$$="LSS";}
-    | LEQ   {$$="LEQ";}
-    | GTR   {$$="GTR";}
-    | GEQ   {$$="GEQ";}
+    : EQL   {$$="EQL";if(p_flag==-1){p_flag=1;}}
+    | NEQ   {$$="NEQ";if(p_flag==-1){p_flag=1;}}
+    | LSS   {$$="LSS";if(p_flag==-1){p_flag=1;}}
+    | LEQ   {$$="LEQ";if(p_flag==-1){p_flag=1;}}
+    | GTR   {$$="GTR";if(p_flag==-1){p_flag=1;}}
+    | GEQ   {$$="GEQ";if(p_flag==-1){p_flag=1;}}
     | l_op
 ;
 l_op
@@ -695,8 +706,9 @@ PostStmt
 ;
 
 PrintStmt
-    : PRINT LPAREN Expression RPAREN    {
-                                            char * buff=strdup($3);
+    : PRINT {p_flag=-1;} LPAREN Expression RPAREN    {
+                                            
+                                            char * buff=strdup($4);
                                             char * idid;
                                             char *c=strstr(buff, "[");
                                             if(c == NULL) {
@@ -712,6 +724,10 @@ PrintStmt
                                             //printf("oaoa : %s\n",idid);
                                             int k=lookup_symbol(idid,scopecount);
                                             char* ptype=NULL;
+                                            if(p_flag==1){
+                                                ptype="bool";
+
+                                            }
                                             if(symbolTable[k].type=="array"){
                                                 ptype=symbolTable[k].etype;
                                             }
@@ -722,10 +738,11 @@ PrintStmt
                                                 ptype="string";
                                             }
                                             printf("PRINT %s\n",ptype);
+                                            p_flag=0;
                                         }
-    | PRINTLN LPAREN Expression RPAREN  {
+    | PRINTLN{p_flag=-1;} LPAREN Expression RPAREN  {
                                             //printf("oaoa :%s\n",$3);
-                                            char * buff=strdup($3);
+                                            char * buff=strdup($4);
                                             char * idid;
                                             char *c=strstr(buff, "[");
                                             if(c == NULL) {
@@ -749,7 +766,11 @@ PrintStmt
                                                 pl=0;
                                             }
                                             */
-                                            if(symbolTable[k].type=="array"){
+                                            if(p_flag==1){
+                                                ptype="bool";
+
+                                            }
+                                            else if(symbolTable[k].type=="array"){
                                                 ptype=symbolTable[k].etype;
                                             }
                                             else if(k!=-1){
@@ -766,6 +787,7 @@ PrintStmt
                                                 ptype="string";
                                             }
                                             printf("PRINTLN %s\n",ptype);
+                                            p_flag=0;
                                         }
 ;
 
