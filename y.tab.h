@@ -45,110 +45,110 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    ADD = 258,
-    SUB = 259,
-    MUL = 260,
-    QUO = 261,
-    REM = 262,
-    INC = 263,
-    DEC = 264,
-    GTR = 265,
-    LSS = 266,
-    GEQ = 267,
-    LEQ = 268,
-    EQL = 269,
-    NEQ = 270,
-    ASSIGN = 271,
-    ADD_ASSIGN = 272,
-    SUB_ASSIGN = 273,
-    MUL_ASSIGN = 274,
-    QUO_ASSIGN = 275,
-    REM_ASSIGN = 276,
-    LAND = 277,
-    LOR = 278,
-    NOT = 279,
-    LPAREN = 280,
-    RPAREN = 281,
-    LBRACK = 282,
-    RBRACK = 283,
-    LBRACE = 284,
-    RBRACE = 285,
-    COMMA = 286,
-    SEMICOLON = 287,
-    NEWLINE = 288,
-    PRINT = 289,
-    PRINTLN = 290,
-    IF = 291,
-    ELSE = 292,
-    FOR = 293,
-    VAR = 294,
-    INT = 295,
-    FLOAT = 296,
-    BOOL = 297,
-    STRING = 298,
-    INT_LIT = 299,
-    FLOAT_LIT = 300,
-    STRING_LIT = 301,
-    ID = 302,
-    TRUE = 303,
-    FALSE = 304
+    INC = 258,
+    DEC = 259,
+    ASSIGN = 260,
+    ADD_ASSIGN = 261,
+    SUB_ASSIGN = 262,
+    MUL_ASSIGN = 263,
+    QUO_ASSIGN = 264,
+    REM_ASSIGN = 265,
+    NOT = 266,
+    LPAREN = 267,
+    RPAREN = 268,
+    LBRACK = 269,
+    RBRACK = 270,
+    LBRACE = 271,
+    RBRACE = 272,
+    COMMA = 273,
+    SEMICOLON = 274,
+    NEWLINE = 275,
+    PRINT = 276,
+    PRINTLN = 277,
+    IF = 278,
+    ELSE = 279,
+    FOR = 280,
+    VAR = 281,
+    INT = 282,
+    FLOAT = 283,
+    BOOL = 284,
+    STRING = 285,
+    INT_LIT = 286,
+    FLOAT_LIT = 287,
+    STRING_LIT = 288,
+    ID = 289,
+    TRUE = 290,
+    FALSE = 291,
+    ADD = 292,
+    SUB = 293,
+    MUL = 294,
+    QUO = 295,
+    REM = 296,
+    GTR = 297,
+    LSS = 298,
+    GEQ = 299,
+    LEQ = 300,
+    EQL = 301,
+    NEQ = 302,
+    LAND = 303,
+    LOR = 304
   };
 #endif
 /* Tokens.  */
-#define ADD 258
-#define SUB 259
-#define MUL 260
-#define QUO 261
-#define REM 262
-#define INC 263
-#define DEC 264
-#define GTR 265
-#define LSS 266
-#define GEQ 267
-#define LEQ 268
-#define EQL 269
-#define NEQ 270
-#define ASSIGN 271
-#define ADD_ASSIGN 272
-#define SUB_ASSIGN 273
-#define MUL_ASSIGN 274
-#define QUO_ASSIGN 275
-#define REM_ASSIGN 276
-#define LAND 277
-#define LOR 278
-#define NOT 279
-#define LPAREN 280
-#define RPAREN 281
-#define LBRACK 282
-#define RBRACK 283
-#define LBRACE 284
-#define RBRACE 285
-#define COMMA 286
-#define SEMICOLON 287
-#define NEWLINE 288
-#define PRINT 289
-#define PRINTLN 290
-#define IF 291
-#define ELSE 292
-#define FOR 293
-#define VAR 294
-#define INT 295
-#define FLOAT 296
-#define BOOL 297
-#define STRING 298
-#define INT_LIT 299
-#define FLOAT_LIT 300
-#define STRING_LIT 301
-#define ID 302
-#define TRUE 303
-#define FALSE 304
+#define INC 258
+#define DEC 259
+#define ASSIGN 260
+#define ADD_ASSIGN 261
+#define SUB_ASSIGN 262
+#define MUL_ASSIGN 263
+#define QUO_ASSIGN 264
+#define REM_ASSIGN 265
+#define NOT 266
+#define LPAREN 267
+#define RPAREN 268
+#define LBRACK 269
+#define RBRACK 270
+#define LBRACE 271
+#define RBRACE 272
+#define COMMA 273
+#define SEMICOLON 274
+#define NEWLINE 275
+#define PRINT 276
+#define PRINTLN 277
+#define IF 278
+#define ELSE 279
+#define FOR 280
+#define VAR 281
+#define INT 282
+#define FLOAT 283
+#define BOOL 284
+#define STRING 285
+#define INT_LIT 286
+#define FLOAT_LIT 287
+#define STRING_LIT 288
+#define ID 289
+#define TRUE 290
+#define FALSE 291
+#define ADD 292
+#define SUB 293
+#define MUL 294
+#define QUO 295
+#define REM 296
+#define GTR 297
+#define LSS 298
+#define GEQ 299
+#define LEQ 300
+#define EQL 301
+#define NEQ 302
+#define LAND 303
+#define LOR 304
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 45 "compiler_hw2.y" /* yacc.c:1909  */
+#line 46 "compiler_hw2.y" /* yacc.c:1909  */
 
     int i_val;
     float f_val;

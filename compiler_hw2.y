@@ -19,6 +19,7 @@
     static int if_flag=0;
     static int  p_flag=0;
     static int  b_flag=0;
+    static int pre =0;
     typedef struct Symbols {
         int index;
         char* name;
@@ -51,10 +52,9 @@
 }
 
 /* Token without return */
-%token ADD SUB MUL QUO REM INC DEC
-%token GTR LSS GEQ LEQ EQL NEQ
+%token INC DEC
 %token ASSIGN ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN QUO_ASSIGN REM_ASSIGN
-%token LAND LOR NOT
+%token NOT
 %token LPAREN RPAREN LBRACK RBRACK LBRACE RBRACE
 %token COMMA SEMICOLON NEWLINE
 %token PRINT PRINTLN
@@ -67,9 +67,11 @@
 %token <s_val> STRING_LIT
 %token <s_val> ID
 %token <s_val> TRUE FALSE
+%token <s_val> ADD SUB MUL QUO REM GTR LSS GEQ LEQ EQL NEQ LAND LOR
 /* Nonterminal with return, which need to sepcify type */
 %type  <s_val> Type TypeName ArrayType Literal
-%type  <s_val> add_op mul_op l_op binary_op unary_op cmp_op assign_op FORT IFT Condition PrimaryExpr ForStmt Expression UnaryExpr Operand
+%type  <s_val> add_op mul_op l_op binary_op unary_op cmp_op assign_op FORT IFT Condition PrimaryExpr ForStmt  UnaryExpr Operand
+%type  <s_val> Expression Expression2 Expression3 Expression4
 /* Yacc will start at this nonterminal */
 %start Program
 
@@ -311,279 +313,46 @@ ArrayType
 ;
 
 Expression
-    : UnaryExpr {
-                }
-    | Expression binary_op Expression   {
-                                            
-                                            //printf("first %s\n",$1);
-                                            //printf("thrid %s\n",$3);
-                                            if(strcmp($2,"ADD")==0||strcmp($2,"SUB")==0){
-                                                char* id1=NULL;
-                                                char* id2=NULL;
-                                                char* type1=NULL;
-                                                char* type2=NULL;
-                                                char *c=strstr($1, " ");
-                                                if(c == NULL) {
-                                                    id1=$1;
-                                                    id2=$3;
-                                                }
-                                                else{
-                                                    char * buff=strdup($1);
-                                                    const char* delim = " ";
-                                                    char *sepstr = buff;
-                                                    char * name=strsep(&sepstr, delim);
-                                                    id1=name;
-                                                    char temp[10]={};
-                                                    char temp2[10]={};
-                                                    strncpy(temp2,$3,strlen($3));
-                                                    if(strcmp(temp2,"INT_LIT")==0){
-                                                        id2=temp2;
-                                                    }
-                                                    else{
-                                                        strncpy(temp,$3,strlen($3)-1);
-                                                        id2=temp;
-                                                    }
-                                                }
-                                                if(strcmp(id1,"INT_LIT")==0){
-                                                    type1="int32";
-                                                }
-                                                else if(strcmp(id1,"FLOAT_LIT")==0){
-                                                    type1="float32";
-                                                }
-                                                else{
-                                                    int i1=lookup_symbol(id1,scopecount);
-                                                    if(i1!=-1){
-                                                         type1=symbolTable[i1].type;
-                                                    }
-                                                    else{
-                                                        type1=" ";
-                                                    }
-                                                }
-                                                if(strcmp(id2,"INT_LIT")==0){
-                                                    type2="int32";
-                                                }
-                                                else if(strcmp(id2,"FLOAT_LIT")==0){
-                                                    type2="float32";
-                                                }
-                                                else{
-                                                    int i2=lookup_symbol(id2,scopecount);
-                                                    if(i2!=-1){
-                                                        type2=symbolTable[i2].type;
-                                                    }
-                                                    else{
-                                                        type2=" ";
-                                                    }
-                                                    
-                                                }
-                                                if(strcmp(type1,type2)!=0){
-                                                    if(strcmp(type1," ")!=0 && strcmp(type2," ")!=0){
-                                                        printf("error\:%d\: invalid operation\: %s (mismatched types %s and %s)\n",yylineno,$2,type1,type2);
-                                                    }
-                                                }
-                                                //printf("type\:%s  %s\n",type1,type2);
-                                            }
-
-                                            if(strcmp($2,"REM")==0){
-                                                char* id1=NULL;
-                                                char* id2=NULL;
-                                                char* type1=NULL;
-                                                char* type2=NULL;
-                                                char *c=strstr($1, " ");
-                                                if(c == NULL) {
-                                                    id1=$1;
-                                                    id2=$3;
-                                                }
-                                                else{
-                                                    char * buff=strdup($1);
-                                                    const char* delim = " ";
-                                                    char *sepstr = buff;
-                                                    char * name=strsep(&sepstr, delim);
-                                                    id1=name;
-                                                    char temp[10]={};
-                                                    char temp2[10]={};
-                                                    strncpy(temp2,$3,strlen($3));
-                                                    if(strcmp(temp2,"INT_LIT")==0){
-                                                        id2=temp2;
-                                                    }
-                                                    else{
-                                                        strncpy(temp,$3,strlen($3)-1);
-                                                        id2=temp;
-                                                    }
-                                                }
-                                                //printf("REM\:%s %s\n",id1,id2);
-                                                int i1=lookup_symbol(id1,scopecount);
-                                                if(i1!=-1){
-                                                        type1=symbolTable[i1].type;
-                                                }
-                                                else{
-                                                    type1=" ";
-                                                }
-                                                int i2=lookup_symbol(id2,scopecount);
-                                                if(i2!=-1){
-                                                    type2=symbolTable[i2].type;
-                                                }
-                                                else{
-                                                    type2=" ";
-                                                }
-                                                if(strcmp(type1,"float32")==0||strcmp(type2,"float32")==0){
-                                                    printf("error\:%d\: invalid operation\: (operator REM not defined on float32)\n",yylineno);
-                                                }
-                                            }
-                                            if(strcmp($2,"LAND")==0||strcmp($2,"LOR")==0){
-                                                //printf("1213\n");
-                                                char* id1=NULL;
-                                                char* id2=NULL;
-                                                char* type1=NULL;
-                                                char* type2=NULL;
-                                                char *c=strstr($1, " ");
-                                                if(c == NULL) {
-                                                    id1=$1;
-                                                    id2=$3;
-                                                }
-                                                else{
-                                                    char * buff=strdup($1);
-                                                    const char* delim = " ";
-                                                    char *sepstr = buff;
-                                                    char * name=strsep(&sepstr, delim);
-                                                    id1=name;
-                                                    char temp[10]={};
-                                                    char temp2[10]={};
-                                                    strncpy(temp2,$3,strlen($3));
-                                                    if(strcmp(temp2,"INT_LIT")==0){
-                                                        id2=temp2;
-                                                    }
-                                                    else{
-                                                        strncpy(temp,$3,strlen($3)-1);
-                                                        id2=temp;
-                                                    }
-                                                }
-                                                if(strcmp(id1,"INT_LIT")==0){
-                                                    type1="int32";
-                                                }
-                                                else if(strcmp(id1,"FLOAT_LIT")==0){
-                                                    type1="float32";
-                                                }
-                                                else{
-                                                    int i1=lookup_symbol(id1,scopecount);
-                                                    if(i1!=-1){
-                                                            type1=symbolTable[i1].type;
-                                                    }
-                                                    else{
-                                                        type1=" ";
-                                                    }
-                                                }
-                                                if(strcmp(id2,"INT_LIT")==0){
-                                                    type2="int32";
-                                                }
-                                                else if(strcmp(id2,"FLOAT_LIT")==0){
-                                                    type2="float32";
-                                                }
-                                                else{
-                                                    int i2=lookup_symbol(id2,scopecount);
-                                                    if(i2!=-1){
-                                                        type2=symbolTable[i2].type;
-                                                    }
-                                                    else{
-                                                        type2=" ";
-                                                    }
-                                                }
-                                                if(strcmp(type1,"int32")==0||strcmp(type2,"int32")==0){
-                                                    printf("error\:%d\: invalid operation\: (operator %s not defined on int32)\n",yylineno,$2);
-                                                }
-                                            }
-                                            printf("%s\n",$2);
-                                            if(f_flag==1){
-                                                //printf("FFF %s\n",$1);
-                                                if(strcmp($1,"x + 1 {")==0){
-                                                    printf("error\:%d\: non-bool (type int32) used as for condition\n",yylineno+1);
-                                                    f_flag=0;
-                                                }
-                                                else{
-                                                    f_flag=0;
-                                                }
-                                            }
-                                            //printf("thrid %s\n",$3);
-                                        }
+    : Expression LOR Expression1    {printf("%s\n","LOR");}
+    | Expression1 
 ;
-
-
+Expression1
+    : Expression1 LAND Expression2   {printf("%s\n","LAND");}
+    | Expression2
+;
+Expression2
+    : Expression2  EQL Expression3  {printf("%s\n","EQL");if(p_flag==-1){p_flag=1;}}
+    | Expression2  NEQ Expression3  {printf("%s\n","NEQ");if(p_flag==-1){p_flag=1;}}
+    | Expression2  LSS Expression3  {printf("%s\n","LSS");if(p_flag==-1){p_flag=1;}}
+    | Expression2  LEQ Expression3  {printf("%s\n","LEQ");if(p_flag==-1){p_flag=1;}}
+    | Expression2  GTR Expression3  {printf("%s\n","GTR");if(p_flag==-1){p_flag=1;}}
+    | Expression2  GEQ Expression3  {printf("%s\n","GEQ");if(p_flag==-1){p_flag=1;}}
+    | Expression3 
+;
+Expression3
+    : Expression3 ADD Expression4   {printf("%s\n","ADD");}
+    | Expression3 SUB Expression4   {printf("%s\n","SUB");}
+    | Expression4
+;
+Expression4
+    : Expression4 MUL UnaryExpr   {printf("%s\n","MUL");}
+    | Expression4 QUO UnaryExpr   {printf("%s\n","QUO");}
+    | Expression4 REM UnaryExpr   {printf("%s\n","REM");}
+    | UnaryExpr
+;
 UnaryExpr
-    : PrimaryExpr      {
-                            if(f_flag==1){
-                                if(strcmp($1,"FLOAT_LIT")==0){
-                                    //printf("%d\n",p_flag);
-                                    printf("error\:%d\: non-bool (type float32) used as for condition\n",yylineno+1);
-                                    f_flag=0;
-                                }
-                            }
-                            char * x1="x {";
-                            if(if_flag==1){
-                                if(strcmp($1,"FLOAT_LIT")==0){
-                                    printf("error\:%d\: non-bool (type float32) used as for condition\n",yylineno+1);
-                                    if_flag=0;
-                                }
-                                else if(strcmp($1,"INT_LIT")==0){
-                                    printf("error\:%d\: non-bool (type int32) used as for condition\n",yylineno+1);
-                                    if_flag=0;
-                                }
-                                else if(strcmp($1,x1)==0){
-                                    char * buff=strdup($1);
-                                    const char* delim = " ";
-                                    char *sepstr = buff;
-                                    char * first=strsep(&sepstr, delim);
-                                    //printf("%s\n",first);
-                                    printf("error\:%d\: non-bool (type int32) used as for condition\n",yylineno+1);
-                                    if_flag=0;
-                                }
-                                else{
-                                    if_flag=0;
-                                }
-                            }
-                        }
-    | unary_op UnaryExpr {printf("%s\n",$1);$$=$1;}
+    : ADD UnaryExpr  {printf("%s\n","POS");}
+    | SUB UnaryExpr  {printf("%s\n","NEG");}
+    | NOT UnaryExpr  {printf("%s\n","NOT");}
+    | PrimaryExpr
 ;
-
-binary_op
-    : add_op
-;
-
-cmp_op
-    : EQL   {$$="EQL";if(p_flag==-1){p_flag=1;}}
-    | NEQ   {$$="NEQ";if(p_flag==-1){p_flag=1;}}
-    | LSS   {$$="LSS";if(p_flag==-1){p_flag=1;}}
-    | LEQ   {$$="LEQ";if(p_flag==-1){p_flag=1;}}
-    | GTR   {$$="GTR";if(p_flag==-1){p_flag=1;}}
-    | GEQ   {$$="GEQ";if(p_flag==-1){p_flag=1;}}
-    | l_op
-;
-l_op
-    : LOR   {$$="LOR";}
-    | LAND  {$$="LAND";}
-;
-add_op
-    : ADD   {$$="ADD";}
-    | SUB   {$$="SUB";}
-    | mul_op
-;
-
-mul_op
-    : MUL   {$$="MUL";}
-    | QUO   {$$="QUO";}
-    | REM   {$$="REM";}
-    | cmp_op
-;
-
-unary_op
-    : ADD   {$$="POS";}
-    | SUB   {$$="NEG";}
-    | NOT   {$$="NOT";}
-;
-
 PrimaryExpr
     : Operand                
     | IndexExpr 
     | ConversionExpr  
 ;
+
+
 
 Operand
     : Literal  
