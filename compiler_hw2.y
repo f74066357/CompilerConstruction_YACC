@@ -498,7 +498,9 @@ Expression
                                                     printf("error\:%d\: non-bool (type int32) used as for condition\n",yylineno+1);
                                                     f_flag=0;
                                                 }
-                                                
+                                                else{
+                                                    f_flag=0;
+                                                }
                                             }
                                             //printf("thrid %s\n",$3);
                                         }
@@ -509,6 +511,7 @@ UnaryExpr
     : PrimaryExpr      {
                             if(f_flag==1){
                                 if(strcmp($1,"FLOAT_LIT")==0){
+                                    //printf("%d\n",p_flag);
                                     printf("error\:%d\: non-bool (type float32) used as for condition\n",yylineno+1);
                                     f_flag=0;
                                 }
@@ -533,7 +536,7 @@ UnaryExpr
                                     if_flag=0;
                                 }
                                 else{
-                                     if_flag=0;
+                                    if_flag=0;
                                 }
                             }
                         }
