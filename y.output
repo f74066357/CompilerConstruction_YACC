@@ -1,13 +1,3 @@
-Nonterminals useless in grammar
-
-   add_op
-   binary_op
-   cmp_op
-   l_op
-   mul_op
-   unary_op
-
-
 Terminals unused in grammar
 
    COMMA
